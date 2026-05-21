@@ -1,0 +1,549 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Commentary Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1a2332 100%);
+            border-bottom: 2px solid #6366f1;
+            padding: 32px 0;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header-content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge {
+            background: #6366f1;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #6366f1;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        textarea, input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .date-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #64748b;
+        }
+
+        .output-section {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .output-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .copy-btn {
+            padding: 8px 12px;
+            font-size: 12px;
+            background: #475569;
+            color: #e2e8f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #64748b;
+        }
+
+        .copy-btn.copied {
+            background: #22c55e;
+            color: white;
+        }
+
+        .narrative-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #cbd5e1;
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .placeholder {
+            color: #64748b;
+            font-style: italic;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #475569;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            background: #7f1d1d;
+            border: 1px solid #991b1b;
+            color: #fecaca;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .success-message {
+            background: #166534;
+            border: 1px solid #15803d;
+            color: #bbf7d0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+            font-size: 13px;
+            border-top: 1px solid #334155;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #818cf8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Portfolio Commentary Generator</h1>
+            <div class="header-meta">
+                <span>Industry: <span class="badge">Wealth Management & Financial Services</span></span>
+                <span>Use Case: <span class="badge">Portfolio Commentary Generator</span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Input Section -->
+            <div class="card">
+                <h2>Portfolio Data</h2>
+                
+                <div class="form-group">
+                    <label for="portfolio-json">Portfolio JSON (Ticker, Weight, Return)</label>
+                    <textarea id="portfolio-json" placeholder='[{"ticker": "AAPL", "weight": 15, "return": 8.5}, {"ticker": "MSFT", "weight": 12, "return": 10.2}]'></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Reporting Period</label>
+                    <div class="date-range">
+                        <div>
+                            <label for="start-date" style="margin-bottom: 4px;">Start Date</label>
+                            <input type="date" id="start-date">
+                        </div>
+                        <div>
+                            <label for="end-date" style="margin-bottom: 4px;">End Date</label>
+                            <input type="date" id="end-date">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" id="generate-btn">Generate Commentary</button>
+                    <button class="btn-secondary" id="clear-btn">Clear</button>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="output-card">
+                    <div class="output-header">
+                        <h3>Generated Narrative</h3>
+                        <button class="copy-btn" id="copy-btn" style="display: none;">Copy to Clipboard</button>
+                    </div>
+                    <div class="narrative-text" id="output-text">
+                        <div class="placeholder">Output will appear here after generation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Powered by Bharat AI · For more information connect <a href="mailto:atulmca@yahoo.com">atulmca@yahoo.com</a>
+    </footer>
+
+    <script>
+        const generateBtn = document.getElementById('generate-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const portfolioInput = document.getElementById('portfolio-json');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const outputText = document.getElementById('output-text');
+
+        // Set default dates (last month)
+        const today = new Date();
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+
+        startDateInput.valueAsDate = lastMonth;
+        endDateInput.valueAsDate = lastMonthEnd;
+
+        generateBtn.addEventListener('click', generateCommentary);
+        clearBtn.addEventListener('click', clearForm);
+        copyBtn.addEventListener('click', copyToClipboard);
+
+        function clearForm() {
+            portfolioInput.value = '';
+            outputText.innerHTML = '<div class="placeholder">Output will appear here after generation</div>';
+            copyBtn.style.display = 'none';
+        }
+
+        async function generateCommentary() {
+            const portfolioJson = portfolioInput.value.trim();
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+
+            // Validation
+            if (!portfolioJson) {
+                showError('Please enter portfolio data in JSON format');
+                return;
+            }
+
+            if (!startDate || !endDate) {
+                showError('Please select both start and end dates');
+                return;
+            }
+
+            // Validate JSON
+            let portfolio;
+            try {
+                portfolio = JSON.parse(portfolioJson);
+                if (!Array.isArray(portfolio) || portfolio.length === 0) {
+                    throw new Error('Portfolio must be a non-empty array');
+                }
+            } catch (e) {
+                showError('Invalid JSON format. Please check your input.');
+                return;
+            }
+
+            // Show loading state
+            showLoading();
+            generateBtn.disabled = true;
+
+            try {
+                const prompt = buildPrompt(portfolio, startDate, endDate);
+                
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-haiku-4-5-20251001',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: prompt
+                            }
+                        ],
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const narrative = data.content[0].text;
+
+                displayNarrative(narrative);
+                copyBtn.style.display = 'block';
+            } catch (error) {
+                showError('Failed to generate commentary: ' + error.message);
+                copyBtn.style.display = 'none';
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        function buildPrompt(portfolio, startDate, endDate) {
+            const formatDate = (dateStr) => {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            };
+
+            const portfolioSummary = portfolio.map(item => 
+                `${item.ticker}: ${item.weight}% allocation, ${item.return}% return`
+            ).join('\n');
+
+            return `You are a professional wealth manager and financial analyst. Generate a compliance-ready monthly performance narrative for a portfolio during the period from ${formatDate(startDate)} to ${formatDate(endDate)}.
+
+Portfolio Holdings:
+${portfolioSummary}
+
+Requirements:
+- Write exactly 200 words
+- Use professional financial language
+- Include performance analysis and attribution
+- Mention individual holdings and their contribution
+- Be compliant and suitable for client reporting
+- Use past tense as this is for the completed reporting period
+- Maintain an objective, professional tone
+
+Please generate the narrative now:`;
+        }
+
+        function displayNarrative(narrative) {
+            outputText.innerHTML = `<div style="white-space: pre-wrap;">${escapeHtml(narrative)}</div>`;
+        }
+
+        function showLoading() {
+            outputText.innerHTML = '<div class="loading"><div class="spinner"></div><span>Generating commentary...</span></div>';
+        }
+
+        function showError(message) {
+            outputText.innerHTML = `<div class="error-message">${escapeHtml(message)}</div>`;
+        }
+
+        function copyToClipboard() {
+            const text = outputText.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                showError('Failed to copy to clipboard');
+            });
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>
+```
